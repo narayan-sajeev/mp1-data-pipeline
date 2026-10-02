@@ -13,13 +13,19 @@ import logging
 import sys
 from pathlib import Path
 
-
 logger = logging.getLogger(__name__)
 
 
 def setup_logging(verbose=False):
     """Configure logging for the pipeline."""
-    pass  # TODO: implement
+    # Check if verbose
+    if verbose:
+        # Set debug level
+        logging.basicConfig(level=logging.DEBUG)
+    # If not
+    else:
+        # Set info level
+        logging.basicConfig(level=logging.INFO)
 
 
 def parse_arguments():
@@ -29,12 +35,22 @@ def parse_arguments():
 
 def validate_input(filepath):
     """Check whether the input path exists and is a file."""
-    pass  # TODO: implement
+    return Path(filepath).is_file()
 
 
 def main():
     """Main pipeline function."""
-    pass  # TODO: implement
+    # Parse arguments
+    args = parse_arguments()
+    # Set up logging
+    setup_logging()
+    # Try to validate the input
+    try:
+        validate_input(args)
+    # If error
+    except:
+        # Return error
+        return 1
 
 
 if __name__ == "__main__":
