@@ -10,9 +10,9 @@ Usage:
 
 import argparse
 import logging
-import sys
 from pathlib import Path
 
+# Initialize logger
 logger = logging.getLogger(__name__)
 
 
@@ -29,7 +29,22 @@ def setup_logging(verbose=False):
 
 def parse_arguments():
     """Parse command-line arguments."""
-    pass  # TODO: implement
+    parser = argparse.ArgumentParser(description='Analyze files.')
+
+    # Add input argument
+    parser.add_argument('-i', '--input', required=True, help='Path to the input file')
+
+    # Add output argument
+    parser.add_argument('-o', '--output', required=True, help='Path to the output file')
+
+    # Add format argument
+    parser.add_argument('--format', choices=['csv', 'json'], default='csv',
+                        help='Output format: csv or json; default is csv')
+
+    # Add verbose argument
+    parser.add_argument('-v', '--verbose', action='store_true', help='Enable verbose logging')
+
+    return parser.parse_args()
 
 
 def validate_input(filepath):
