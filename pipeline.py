@@ -12,7 +12,9 @@ import argparse
 import logging
 import sys
 from pathlib import Path
+
 from data_loaders import load_data
+from data_processor import process_data, create_cleaning_report
 
 # Initialize logger
 logger = logging.getLogger(__name__)
@@ -25,7 +27,7 @@ def setup_logging(verbose=False):
 
     # Set up logger, print time, level & message
     # Print hours:minutes:seconds
-    logging.basicConfig(level=level, format='%(asctime)s %(levelname)s %(message)s',
+    logging.basicConfig(level=level, format="%(asctime)s %(levelname)-8s %(name)s — %(message)s",
                         datefmt='%H:%M:%S')
 
 
@@ -36,12 +38,11 @@ def parse_arguments():
     # Add input argument
     parser.add_argument('-i', '--input', required=True, help='Path to the input file')
 
+    # Add config argument
+    parser.add_argument('--config', required=True, help='Path to YAML configuration file')
+
     # Add output argument
     parser.add_argument('-o', '--output', required=True, help='Path to the output file')
-
-    # Add format argument
-    parser.add_argument('--format', choices=['csv', 'json'], default='csv',
-                        help='Output format: csv or json; default is csv')
 
     # Add verbose argument
     parser.add_argument('-v', '--verbose', action='store_true', help='Enable verbose logging')
@@ -71,21 +72,48 @@ def main():
     # Set up logging with proper verbosity
     setup_logging(args.verbose)
     # Output parsed arguments using logger
-    logger.debug(f'Arguments parsed: input={args.input}, output={args.output}, format={args.format}')
+    logger.debug(f'Arguments parsed: input={args.input}, config={args.config}, output={args.output}')
     # Retrieve filepath
     path = args.input
-    # See if error comes when validating input
+    # See if error comes when validating path
     if not validate_input(path):
         # If so, exit with error 1
         sys.exit(1)
+    # Retrieve config
+    config_path = args.config
+    # See if error comes when validating config
+    if not validate_input(config_path):
+        # If so, exit with error 1
+        sys.exit(1)
 
-    # Try to load data
+    # Try to load data and config
     try:
-        data = load_data(path)
+        df = load_data(path)
+        config = load_data(config_path)
     # If error
     except ValueError:
         # Exit program
         sys.exit(1)
+
+    # Copy original data
+    df_copy = df.copy()
+
+    # Try to process data
+    try:
+        processed = process_data(df, config)
+    # If error
+    except ValueError:
+        # Exit program
+        sys.exit(1)
+
+    # Print report
+    print(create_cleaning_report(df_copy, processed))
+    logger.info(f'Processing complete: {len(df_copy)} → {len(processed)} rows')
+
+    # Save final df without index
+    processed.to_csv(args.output, index=False)
+    # Log message
+    logger.info(f'Saved cleaned data to {args.output}')
 
 
 if __name__ == "__main__":

@@ -48,7 +48,7 @@ def load_yaml(filepath):
         data = yaml.safe_load(file)
 
     # Log that file was read
-    logging.info(f'Loaded YAML file: {filepath}')
+    logger.info(f'Loaded YAML file: {filepath}')
     # Return data
     return data
 
@@ -79,6 +79,6 @@ def load_data(filepath):
         # Define error message
         msg = f'Unsupported file format: {ext}'
         # Log error
-        logging.error(msg)
+        logger.error(msg)
         # Raise error
         raise ValueError(msg)
