@@ -12,6 +12,7 @@ import argparse
 import logging
 import sys
 from pathlib import Path
+from data_loaders import load_data
 
 # Initialize logger
 logger = logging.getLogger(__name__)
@@ -71,9 +72,19 @@ def main():
     setup_logging(args.verbose)
     # Output parsed arguments using logger
     logger.debug(f'Arguments parsed: input={args.input}, output={args.output}, format={args.format}')
+    # Retrieve filepath
+    path = args.input
     # See if error comes when validating input
-    if not validate_input(args.input):
+    if not validate_input(path):
         # If so, exit with error 1
+        sys.exit(1)
+
+    # Try to load data
+    try:
+        data = load_data(path)
+    # If error
+    except ValueError:
+        # Exit program
         sys.exit(1)
 
 
