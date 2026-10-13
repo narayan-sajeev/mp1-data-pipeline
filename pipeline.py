@@ -18,14 +18,13 @@ logger = logging.getLogger(__name__)
 
 def setup_logging(verbose=False):
     """Configure logging for the pipeline."""
-    # Check if verbose
-    if verbose:
-        # Set debug level
-        logging.basicConfig(level=logging.DEBUG)
-    # If not
-    else:
-        # Set info level
-        logging.basicConfig(level=logging.INFO)
+    # Set logging level based on verbose flag
+    level = logging.DEBUG if verbose else logging.INFO
+
+    # Set up logger, print time, level & message
+    # Print hours:minutes:seconds
+    logging.basicConfig(level=level, format='%(asctime)s %(levelname)s %(message)s',
+                        datefmt='%H:%M:%S')
 
 
 def parse_arguments():
