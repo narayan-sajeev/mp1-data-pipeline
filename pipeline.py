@@ -49,7 +49,17 @@ def parse_arguments():
 
 def validate_input(filepath):
     """Check whether the input path exists and is a file."""
-    return Path(filepath).is_file()
+    # Define path
+    path = Path(filepath)
+
+    # Check if file
+    if path.is_file():
+        logging.info(f'Input file validated: {filepath}')
+        return True
+
+    # If not file
+    logging.error(f'Input file not found: {filepath}')
+    return False
 
 
 def main():
