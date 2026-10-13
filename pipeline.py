@@ -10,6 +10,7 @@ Usage:
 
 import argparse
 import logging
+import sys
 from pathlib import Path
 
 # Initialize logger
@@ -54,11 +55,11 @@ def validate_input(filepath):
 
     # Check if file
     if path.is_file():
-        logging.info(f'Input file validated: {filepath}')
+        logger.info(f'Input file validated: {filepath}')
         return True
 
     # If not file
-    logging.error(f'Input file not found: {filepath}')
+    logger.error(f'Input file not found: {filepath}')
     return False
 
 
@@ -66,15 +67,14 @@ def main():
     """Main pipeline function."""
     # Parse arguments
     args = parse_arguments()
-    # Set up logging
-    setup_logging()
-    # Try to validate the input
-    try:
-        validate_input(args)
-    # If error
-    except:
-        # Return error
-        return 1
+    # Set up logging with proper verbosity
+    setup_logging(args.verbose)
+    # Output parsed arguments using logger
+    logger.debug(f'Arguments parsed: input={args.input}, output={args.output}, format={args.format}')
+    # See if error comes when validating input
+    if not validate_input(args.input):
+        # If so, exit with error 1
+        sys.exit(1)
 
 
 if __name__ == "__main__":
